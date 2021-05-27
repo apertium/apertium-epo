@@ -1,6 +1,6 @@
 AC_PREREQ(2.52)
 
-AC_INIT([Apertium Esperanto], [0.1.0], [olga-p-98@mail.ru], [apertium-epo], [http://wiki.apertium.org/wiki/Apertium-epo])
+AC_INIT([Apertium Esperanto], [0.1.0], [olga-p-98@mail.ru], [apertium-epo], [https://wiki.apertium.org/wiki/Apertium-epo])
 AM_INIT_AUTOMAKE
 
 AC_PROG_LN_S
