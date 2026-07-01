@@ -3,6 +3,6 @@ exec_prefix=${prefix}
 srcdir=@datarootdir@/apertium/apertium-epo
 
 Name: apertium-epo
-Description: Finite-state morphological transducer and constraint grammar for Esperanto 
+Description: Finite-state morphological transducer and constraint grammar for Esperanto
 Version: @VERSION@
 

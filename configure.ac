@@ -1,25 +1,29 @@
 AC_PREREQ(2.52)
 
-AC_INIT([Apertium Esperanto], [0.1.0], [olga-p-98@mail.ru], [apertium-epo], [https://wiki.apertium.org/wiki/Apertium-epo])
+AC_INIT([Apertium Esperanto], [0.1.0], [https://github.com/apertium/apertium-epo/issues], [apertium-epo], [https://wiki.apertium.org/wiki/Apertium-epo])
 AM_INIT_AUTOMAKE
-
-AC_PROG_LN_S
 AC_PROG_AWK
 
-m4_define([required_apertium_version], [3.4.0])
-m4_define([required_lttoolbox_version], [3.3.2])
+PKG_CHECK_MODULES(LTTOOLBOX, lttoolbox >= 3.7.4)
+PKG_CHECK_MODULES(APERTIUM, apertium >= 3.9.0)
+PKG_CHECK_MODULES(CG3, cg3 >= 1.4.0)
 
-PKG_CHECK_MODULES(APERTIUM, apertium >= required_apertium_version)
-PKG_CHECK_MODULES(LTTOOLBOX, lttoolbox >= required_lttoolbox_version)
+AC_ARG_ENABLE([speller], AC_HELP_STRING([--enable-speller], [Build spellchecker from morphological analyser]))
 
-AC_PATH_PROG([CGCOMP], [cg-comp], [false], [$PATH$PATH_SEPARATOR$with_cg_comp/bin])
-AS_IF([test x$CGCOMP = xfalse], [AC_MSG_ERROR([You don't have cg-comp installed])])
+AM_CONDITIONAL([ENABLE_SPELLER], [test "x$enable_speller" = "xyes"])
+AM_COND_IF([ENABLE_SPELLER], [
+  PKG_CHECK_MODULES(HFST, hfst >= 3.16.0)
+  PKG_CHECK_MODULES(HFSTOSPELL, hfstospell >= 0.5.3, [],
+     [AC_MSG_NOTICE([You will need hfst-ospell installed to use the compiled speller])])
+])
 
+AC_ARG_ENABLE([linter], AC_HELP_STRING([--enable-linter], [Lint files when compiling]))
+AM_CONDITIONAL([ENABLE_LINTER], [test "x$enable_linter" = "xyes"])
 
-PKG_CHECK_MODULES(REGTEST, apertium-regtest >= 0.0.1, [],
-                  [AC_MSG_WARN([Running tests requires apertium-regtest])])
+PKG_CHECK_MODULES(REGTEST, apertium-regtest >= 0.9.1, [],
+   [AC_MSG_WARN([Running tests requires apertium-regtest])])
 
 AP_MKINCLUDE
 
-AC_OUTPUT([Makefile apertium-epo.pc])
-
+AC_CONFIG_FILES([Makefile apertium-epo.pc])
+AC_OUTPUT
