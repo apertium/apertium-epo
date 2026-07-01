@@ -51,8 +51,20 @@ $(LANG1).rlx.bin: $(BASENAME).$(LANG1).rlx $(CGCOMP)
 ## Unigram tagger
 ###############################################################################
 
+# epo.prob is a distributed, pre-trained artifact (see EXTRA_DIST below) —
+# it was NOT generated from corpus/epo.tagged, which is only a 4-line
+# smoke-test fixture, not a real training corpus. Because git checkout
+# does not preserve mtimes, corpus/epo.tagged can non-deterministically
+# appear "newer" than epo.prob after a fresh clone, which would make
+# ordinary `make` retrain (and destroy) the real model from that toy
+# fixture. Guard the recipe so it only (re)builds epo.prob when it is
+# actually missing; use `make retrain-tagger` to force regeneration.
 $(LANG1).prob: corpus/$(LANG1).tagged
-	apertium-tagger -s 0 -u 2 $@ $<
+	test -f $@ || apertium-tagger -s 0 -u 2 $@ $<
+
+.PHONY: retrain-tagger
+retrain-tagger:
+	apertium-tagger -s 0 -u 2 $(LANG1).prob corpus/$(LANG1).tagged
 
 ###############################################################################
 ## Distribution
